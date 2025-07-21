@@ -64,12 +64,18 @@ function love.update(dt)
         if ball_x + ball_radius >= paddle_x and ball_x - ball_radius <= paddle_x + paddle_width then
             ball_y = paddle_y - paddle_height
             ball_speedY = -ball_speedY
-            player_score = player_score+1
+            player_score = player_score + 1
+
+            if player_score % 10 == 0 then
+                paddle_speed = paddle_speed + 100
+                ball_speedX = ball_speedX + 50
+                ball_speedY = ball_speedY + 50
+            end
         end
     end
 
     if ball_y + ball_radius > window_height then
-     resetBall()
+        resetBall()
     end
 end
 
@@ -77,11 +83,14 @@ function love.draw()
     -- love.graphics.print("Hello World",300t,200)
     love.graphics.rectangle('fill', paddle_x, paddle_y, paddle_width, paddle_height)
     love.graphics.circle('fill', ball_x, ball_y, ball_radius)
-    love.graphics.print(player_score,window_width-20,10)
+    love.graphics.printf(player_score, 0, 20, window_width, 'center')
 end
 
 function resetBall()
     ball_x = math.random(window_width)
     ball_y = ball_radius
     player_score = 0
+    ball_speedX = 100
+    ball_speedY = 200
+    paddle_speed = 200
 end
