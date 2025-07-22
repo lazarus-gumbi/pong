@@ -16,6 +16,8 @@ ball_speedX = 100
 ball_speedY = 200
 
 player_score = 0
+sound = love.audio.newSource("hit.mp3","static")
+background = love.graphics.newImage("bg.png")
 
 
 
@@ -45,18 +47,21 @@ function love.update(dt)
         ball_y = ball_radius
         -- ball_y = ball_y
         ball_speedY = -ball_speedY
+        playSound()
     end
 
     -- right bounce
     if ball_x + ball_radius > window_width then
         ball_x = window_width - ball_radius
         ball_speedX = -ball_speedX
+        playSound()
     end
 
     -- left bounce
     if ball_x - ball_radius < 0 then
         ball_x = ball_radius
         ball_speedX = -ball_speedX
+        playSound()
     end
 
     -- paddle bounce
@@ -65,6 +70,8 @@ function love.update(dt)
             ball_y = paddle_y - paddle_height
             ball_speedY = -ball_speedY
             player_score = player_score + 1
+            playSound()
+            
 
             if player_score % 10 == 0 then
                 paddle_speed = paddle_speed + 100
@@ -79,8 +86,14 @@ function love.update(dt)
     end
 end
 
+function playSound()
+    sound:stop()
+    sound:play()
+end
+
 function love.draw()
     -- love.graphics.print("Hello World",300t,200)
+    love.graphics.draw(background,0,0)
     love.graphics.rectangle('fill', paddle_x, paddle_y, paddle_width, paddle_height)
     love.graphics.circle('fill', ball_x, ball_y, ball_radius)
     love.graphics.printf(player_score, 0, 20, window_width, 'center')
