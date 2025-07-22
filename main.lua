@@ -18,12 +18,14 @@ ball_speedY = 200
 player_score = 0
 sound = love.audio.newSource("hit.mp3","static")
 background = love.graphics.newImage("bg.png")
+font = love.graphics.newFont("MyFont.ttf",40)
 
 
 
 function love.load()
     love.window.setTitle("padel")
     love.window.setMode(window_width, window_height)
+    love.graphics.setFont(font)
 end
 
 function love.update(dt)
