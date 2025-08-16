@@ -16,11 +16,23 @@ ball_speedX = 100
 ball_speedY = 200
 
 player_score = 0
-sound = love.audio.newSource("hit.mp3","static")
+sound = love.audio.newSource("hit.mp3", "static")
 background = love.graphics.newImage("bg.png")
-font = love.graphics.newFont("MyFont.ttf",40)
+font = love.graphics.newFont("MyFont.ttf", 40)
 
+local particles = {}
 
+function spawnParticle(x, y)
+    local p = {
+        x = x,
+        y = y,
+        radius = math.random(2, 5),
+        dx = math.random(-50, 50),
+        dy = math.random(-50, 50),
+        life = 1 -- seconds
+    }
+    table.insert(particles, p)
+end
 
 function love.load()
     love.window.setTitle("padel")
@@ -29,6 +41,17 @@ function love.load()
 end
 
 function love.update(dt)
+    -- Update particles
+    for i = #particles, 1, -1 do
+        local p = particles[i]
+        p.x = p.x + p.dx * dt
+        p.y = p.y + p.dy * dt
+        p.life = p.life - dt
+        if p.life <= 0 then
+            table.remove(particles, i)
+        end
+    end
+
     if love.keyboard.isDown('a') then
         if paddle_x > 0 then
             paddle_x = paddle_x - (paddle_speed * dt)
@@ -73,7 +96,10 @@ function love.update(dt)
             ball_speedY = -ball_speedY
             player_score = player_score + 1
             playSound()
-            
+            for i = 1, 30 do
+                spawnParticle(ball_x, ball_y)
+            end
+
 
             if player_score % 10 == 0 then
                 paddle_speed = paddle_speed + 100
@@ -95,10 +121,18 @@ end
 
 function love.draw()
     -- love.graphics.print("Hello World",300t,200)
-    love.graphics.draw(background,0,0)
+    -- reset color
+
+    love.graphics.draw(background, 0, 0)
     love.graphics.rectangle('fill', paddle_x, paddle_y, paddle_width, paddle_height)
     love.graphics.circle('fill', ball_x, ball_y, ball_radius)
     love.graphics.printf(player_score, 0, 20, window_width, 'center')
+    for _, p in ipairs(particles) do
+        local alpha = p.life / 1               -- fade out over lifetime
+        love.graphics.setColor(1, 1, 1, alpha) -- white, fade with life
+        love.graphics.circle("fill", p.x, p.y, p.radius)
+    end
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 function resetBall()
